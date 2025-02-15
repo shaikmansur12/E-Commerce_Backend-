@@ -1,14 +1,18 @@
+require('dotenv').config();
 const { MongoClient } = require('mongodb');
-const url = require('./url');
 
-const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+const url = process.env.MONGO_URL; // Fetch from env
+const client = new MongoClient(url);
 
 async function connectDB() {
-    if (!client.topology || !client.topology.isConnected()) {
+    try {
         await client.connect();
-        console.log("✅ Connected to MongoDB Atlas!");
+        console.log("Connected to MongoDB");
+        return client.db('nodedb');
+    } catch (err) {
+        console.error("MongoDB Connection Error:", err);
+        process.exit(1);
     }
-    return client.db('nodedb'); // Ensure the DB name matches Atlas
 }
 
 module.exports = connectDB;
