@@ -38,6 +38,37 @@
 // module.exports = router
 
 
+// const express = require('express');
+// const { MongoClient } = require('mongodb');
+// const url = require('../url');
+
+// const router = express.Router();
+
+// router.delete('/', async (req, res) => {
+//     try {
+//         const client = new MongoClient(url);
+//         await client.connect();
+
+//         const db = client.db('nodedb');
+//         const result = await db.collection('products').deleteOne({ p_id: req.body.p_id });
+
+//         if (result.deletedCount > 0) {
+//             console.log('✅ Data Deleted');
+//             res.json({ delete: 'success' });
+//         } else {
+//             console.log("❌ Record Not Found");
+//             res.json({ delete: 'Record Not Found' });
+//         }
+
+//         client.close();
+//     } catch (err) {
+//         console.error("❌ Error:", err);
+//         res.status(500).json({ delete: `Error ${err}` });
+//     }
+// });
+
+// module.exports = router;
+
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const url = require('../url');
@@ -50,7 +81,11 @@ router.delete('/', async (req, res) => {
         await client.connect();
 
         const db = client.db('nodedb');
-        const result = await db.collection('products').deleteOne({ p_id: req.body.p_id });
+        const p_id = req.body.p_id.toString(); // Convert input to string
+
+        const result = await db.collection('products').deleteOne({
+            p_id: { $eq: p_id } // Match regardless of type
+        });
 
         if (result.deletedCount > 0) {
             console.log('✅ Data Deleted');

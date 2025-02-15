@@ -32,26 +32,18 @@
 // module.exports = router
 
 const express = require('express');
-const { MongoClient } = require('mongodb');
-const url = require('../url');
-
 const router = express.Router();
+const connectDB = require('../db');
 
 router.post('/', async (req, res) => {
     try {
-        const client = new MongoClient(url);
-        await client.connect();
-
-        const db = client.db('nodedb');
+        const db = await connectDB();
         const result = await db.collection('products').insertOne(req.body);
-
-        console.log('✅ Data Inserted:', result);
-        res.json({ insert: 'success' });
-
-        client.close();
+        console.log("✅ Data Inserted:", result);
+        res.json({ insert: "success", insertedId: result.insertedId });
     } catch (err) {
-        console.error("❌ Error:", err);
-        res.status(500).json({ insert: `Error ${err}` });
+        console.error("❌ Insert Error:", err);
+        res.status(500).json({ insert: "Error inserting data" });
     }
 });
 

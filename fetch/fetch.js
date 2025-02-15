@@ -29,26 +29,44 @@
 
 // module.exports = router
 
-const express = require('express');
-const { MongoClient } = require('mongodb');
-const url = require('../url');
+// const express = require('express');
+// const { MongoClient } = require('mongodb');
+// const url = require('../url');
 
+// const router = express.Router();
+
+// router.get('/', async (req, res) => {
+//     try {
+//         const client = new MongoClient(url);
+//         await client.connect();
+//         console.log("✅ Connected to MongoDB");
+
+//         const db = client.db('nodedb');
+//         const products = await db.collection('products').find().toArray();
+
+//         res.json(products);
+//         client.close();
+//     } catch (err) {
+//         console.error("❌ Error:", err);
+//         res.status(500).json({ error: "Database connection failed" });
+//     }
+// });
+
+// module.exports = router;
+
+
+const express = require('express');
 const router = express.Router();
+const connectDB = require('../db');
 
 router.get('/', async (req, res) => {
     try {
-        const client = new MongoClient(url);
-        await client.connect();
-        console.log("✅ Connected to MongoDB");
-
-        const db = client.db('nodedb');
+        const db = await connectDB();
         const products = await db.collection('products').find().toArray();
-
         res.json(products);
-        client.close();
     } catch (err) {
-        console.error("❌ Error:", err);
-        res.status(500).json({ error: "Database connection failed" });
+        console.error("❌ Fetch Error:", err);
+        res.status(500).json({ error: "Failed to fetch data" });
     }
 });
 

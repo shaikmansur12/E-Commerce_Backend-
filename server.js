@@ -36,36 +36,23 @@
 //     }
 // })
 
+require('dotenv').config(); // Load environment variables
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
+const port = process.env.PORT || 8080;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
-const port = process.env.PORT || 8080;
+// Import Routes
+app.use('/fetch', require('./fetch/fetch'));
+app.use('/insert', require('./insert/insert'));
+app.use('/update', require('./update/update'));
+app.use('/delete', require('./delete/delete'));
 
-// Import routes
-const fetch = require('./fetch/fetch');
-const insert = require('./insert/insert');
-const update = require('./update/update');
-const remove = require('./delete/delete');
-
-// Use routes
-app.use('/fetch', fetch);
-app.use('/insert', insert);
-app.use('/update', update);
-app.use('/delete', remove);
-
-// Start server
-app.listen(port, (err) => {
-    if (err) {
-        console.error("Error in port connection:", err);
-    } else {
-        console.log(`🚀 Server listening on port ${port}`);
-    }
-});
+// Start Server
+app.listen(port, () => console.log(`🚀 Server running on port ${port}`));

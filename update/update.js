@@ -41,34 +41,29 @@
 
 
 const express = require('express');
-const { MongoClient } = require('mongodb');
-const url = require('../url');
-
 const router = express.Router();
+const connectDB = require('../db');
 
 router.put('/', async (req, res) => {
     try {
-        const client = new MongoClient(url);
-        await client.connect();
+        const db = await connectDB();
+        const { p_id, p_name, p_cost } = req.body;
 
-        const db = client.db('nodedb');
         const result = await db.collection('products').updateOne(
-            { p_id: req.body.p_id }, 
-            { $set: { p_name: req.body.p_name, p_cost: req.body.p_cost } }
+            { p_id: (p_id) },  
+            { $set: { p_name, p_cost } }
         );
 
         if (result.matchedCount > 0) {
-            console.log('✅ Data Updated');
-            res.json({ update: 'success' });
+            console.log("✅ Data Updated");
+            res.json({ update: "success" });
         } else {
             console.log("❌ Record Not Found");
-            res.json({ update: 'Record Not Found' });
+            res.json({ update: "Record Not Found" });
         }
-
-        client.close();
     } catch (err) {
-        console.error("❌ Error:", err);
-        res.status(500).json({ update: `Error ${err}` });
+        console.error("❌ Update Error:", err);
+        res.status(500).json({ update: "Error updating data" });
     }
 });
 
